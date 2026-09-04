@@ -64,7 +64,7 @@ Run this when `docs/agents/github-project.md` is missing. It is a conversation, 
 4. **Get a project.** If step 3 turned one up and the maintainer wants to reuse it, skip to step 5. Otherwise create one:
 
    ```bash
-   "$CLAUDE_PLUGIN_ROOT/scripts/create-triage-board.sh"
+   "$CLAUDE_PLUGIN_ROOT/skills/triage/create-triage-board.sh"
    ```
 
    The script ships with this plugin, not with the repo being triaged, so it is never `./scripts/...`: the working directory at that moment is the user's project. `$CLAUDE_PLUGIN_ROOT` points at the installed plugin and is always set here, because this skill is only ever invoked as a plugin skill, `mattpocock-skills-override:triage`.

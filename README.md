@@ -30,7 +30,7 @@ This wrapper leaves that state machine entirely alone and projects it onto a boa
 - **Board failures never roll back label work.** A missing OAuth scope degrades the skill to plain upstream behaviour instead of breaking it.
 - **GitHub-only, by construction.** `/setup-matt-pocock-skills` lets a repo track issues in GitLab, local markdown, or elsewhere. When it does, the board layer stands down and you get plain upstream triage: no GitHub project is created for a repo whose issues do not live in GitHub.
 
-First run resolves everything: it reuses a project if you have one, or runs `scripts/create-triage-board.sh` to build the board, named after the repo. `gh project create` yields a Table view with `Todo` / `In Progress` / `Done`, so the script takes it the rest of the way through GraphQL: the six triage columns on the built-in `Status` field, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
+First run resolves everything: it reuses a project if you have one, or runs the skill's `create-triage-board.sh` to build the board, named after the repo. `gh project create` yields a Table view with `Todo` / `In Progress` / `Done`, so the script takes it the rest of the way through GraphQL: the six triage columns on the built-in `Status` field, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
 
 GitHub's Kanban template is not involved: it exists only in the web UI's creation form, and none of its three columns is a triage state, so the columns are defined directly.
 
@@ -75,10 +75,9 @@ Keep the delta small and legible. The value here is the layer, not a rewrite.
 plugin.json               the same plugin, Agent Plugins format
 skills/
   triage/
-    SKILL.md              the wrapper: pre-flight, delegate, board rules
-    PROJECT-BOARD.md      board config, gh recipes, Status mapping
-scripts/
-  create-triage-board.sh  build the triage board via GraphQL
+    SKILL.md                the wrapper: pre-flight, delegate, board rules
+    PROJECT-BOARD.md        board config, gh recipes, Status mapping
+    create-triage-board.sh  build the board via GraphQL
 ```
 
 ## Agent Plugins (agent-plugins.org) compatibility

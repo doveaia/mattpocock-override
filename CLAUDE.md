@@ -59,7 +59,7 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 
 ## Current overrides
 
-- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/triage/PROJECT-BOARD.md`. Board creation is deterministic and lives in `scripts/create-triage-board.sh`, not in the skill prose.
+- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/triage/PROJECT-BOARD.md`. Board creation is deterministic and lives in `skills/triage/create-triage-board.sh`, not in the skill prose.
 
 ## Layout
 
@@ -68,8 +68,9 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 .claude-plugin/plugin.json        plugin "mattpocock-skills-override"
 plugin.json                       the same plugin, Agent Plugins format
 skills/<name>/                    one wrapper per upstream skill, flat
-scripts/create-triage-board.sh    build the triage board via GraphQL
 ```
+
+A skill's runtime assets live **in its own folder**, next to its `SKILL.md`: reference docs, scripts, templates. There is no top-level `scripts/`. Upstream has one, but it holds repo tooling for the maintainer, which is a different thing from something a skill executes. A skill folder that is self-contained can be read, moved, or copied as the one unit it is, and the portable skill formats treat it that way too. Reach for it with `$CLAUDE_PLUGIN_ROOT/skills/<name>/<file>`.
 
 Both plugins expose the same skill names, so a bare `/triage` is ambiguous. Skills here are invoked by their qualified name, `mattpocock-skills-override:<name>`. That is the only supported entry point: don't add a symlink installer to make the bare name resolve here, since a second install path means a second set of runtime assumptions to keep true.
 
