@@ -1,7 +1,7 @@
 {
   "name": "mattpocock-skills-override",
-  "version": "0.2.0",
-  "description": "Thin wrappers over Matt Pocock's engineering skills. Each keeps its upstream name and delegates to the upstream skill, layering changes on top instead of forking. Currently ships triage with GitHub Projects board integration.",
+  "version": "0.3.0",
+  "description": "Extensions to Matt Pocock's engineering skills that work through upstream's own per-repo config instead of wrapping or forking. Ships setup-triage-board, which gives triage a GitHub Projects board, and sync-triage-board, which moves cards when triage labels change. Requires the mattpocock-skills plugin.",
   "author": {
     "name": "James Kokou GAGLO",
     "url": "https://github.com/doveaia"
@@ -16,6 +16,7 @@
     "override"
   ],
   "skills": [
-    "./skills/triage"
+    "./skills/setup-triage-board",
+    "./skills/sync-triage-board"
   ]
 }

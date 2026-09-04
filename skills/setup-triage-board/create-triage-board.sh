@@ -101,15 +101,22 @@ gh api graphql -f query='
 echo "4. linked to $OWNER/$REPO_NAME"
 
 # --- 5. the config file -----------------------------------------------------
+# IDs resolved above, followed by the rules and recipes template that ships
+# next to this script. Together they are docs/agents/github-project.md.
 OPTIONS="$(gh project field-list "$NUMBER" --owner "$OWNER" --format json \
   --jq '.fields[] | select(.name == "Status") | .options[] | "\(.name)\t\(.id)"')"
 opt() { printf '%s\n' "$OPTIONS" | awk -F'\t' -v n="$1" '$1 == n {print $2}'; }
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 echo
-echo "5. save this as docs/agents/github-project.md:"
-echo
+echo "5. save everything below this line as docs/agents/github-project.md:"
+echo "----------------------------------------------------------------------"
 cat <<EOF
 # Triage project board
+
+Triaged issues and PRs are mirrored to a GitHub Projects (v2) board. This file holds the board's identity, the column mapping, and the rules and recipes for keeping it in step with the triage labels.
+
+## Board
 
 - **Owner**: \`$OWNER\`
 - **Project number**: \`$NUMBER\`
@@ -120,8 +127,8 @@ cat <<EOF
 
 ## Status options
 
-| Triage state role | Column          | Option ID           |
-| ----------------- | --------------- | ------------------- |
+| Triage state role | Column          | Option ID  |
+| ----------------- | --------------- | ---------- |
 | _(untriaged)_     | Inbox           | \`$(opt Inbox)\` |
 | \`needs-triage\`    | Triage          | \`$(opt Triage)\` |
 | \`needs-info\`      | Needs Info      | \`$(opt "Needs Info")\` |
@@ -129,7 +136,5 @@ cat <<EOF
 | \`ready-for-human\` | Ready for Human | \`$(opt "Ready for Human")\` |
 | \`wontfix\`         | Closed          | \`$(opt Closed)\` |
 
-## Other fields maintained by triage
-
-_(none)_
 EOF
+cat "$HERE/github-project.md"
