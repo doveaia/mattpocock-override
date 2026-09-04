@@ -59,25 +59,15 @@ Run this when `docs/agents/github-project.md` is missing. It is a conversation, 
    gh project list --owner <owner> --format json --jq '.projects[] | {number, title, url}'
    ```
 
-4. **Get a project. Prefer reuse, and prefer the web UI for creation.**
-
-   `gh project create` takes only `--owner` and `--title`. It cannot pick a GitHub project template, cannot choose a view layout, and cannot rename a single-select option afterwards. What it produces is a **Table** view with a `Status` field of `Todo` / `In Progress` / `Done`: three columns, not a kanban, and not the five triage states.
-
-   So when the maintainer wants an actual board, say this and let them do it once:
-
-   > Create it at `https://github.com/orgs/<owner>/projects/new` (or `/users/<owner>/projects/new` for a personal one), from the **Kanban** or **Bug tracker** template, and rename the columns to the triage states you want. Tell me the project number when it exists.
-
-   Step 3 then picks it up as an existing project and the rest of the setup is unchanged. This is the recommended path: one minute in the UI buys the right layout and the right columns.
-
-   Only if the maintainer would rather not leave the terminal:
+4. **Get a project.** If step 3 turned one up and the maintainer wants to reuse it, skip to step 5. Otherwise create one:
 
    ```bash
-   gh project create --owner <owner> --title "<title>" --format json
+   ./scripts/create-triage-board.sh
    ```
 
-   Then tell them plainly what they got: a table with `Todo` / `In Progress` / `Done`, needing one click in the UI to switch the view to Board, and column edits before the mapping in step 6 is anything but a squeeze of five states into three.
+   `gh project create` alone would leave a Table view with `Todo` / `In Progress` / `Done`, since it takes no template and no layout. The script builds the Kanban shape through GraphQL instead: it names the project after the git repo, replaces the stock Status options with the six triage columns, switches the default view to `BOARD_LAYOUT`, links the project to the repo, and prints the config file with every ID resolved. Pass `--owner` or `--title` to override its defaults.
 
-   **Default title: `<repo> Triage`** (e.g. `mattpocock-override Triage`), from `gh repo view --json name`. A project belongs to the owner, not the repo, so an unqualified name like "Engineering Triage" collides with every other repo under the same owner. Confirm the title before creating.
+   It refuses to run without the `project` scope, and it replaces the Status options wholesale, so only ever point it at a project it just created.
 
 5. **Resolve the IDs:**
 

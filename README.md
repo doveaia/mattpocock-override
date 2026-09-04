@@ -29,7 +29,7 @@ This wrapper leaves that state machine entirely alone and projects it onto a boa
 - **State role to column** is a mapping you own, written to `docs/agents/github-project.md` on first run alongside the resolved project, field, and option IDs. No ID is ever guessed.
 - **Board failures never roll back label work.** A missing OAuth scope degrades the skill to plain upstream behaviour instead of breaking it.
 
-First run resolves everything interactively: it finds or creates the project, discovers the Status field's options, proposes a mapping, and writes the config once.
+First run resolves everything: it reuses a project if you have one, or runs `scripts/create-triage-board.sh` to build a Kanban board named after the repo. `gh project create` has no `--template` and always yields a Table view, so the script assembles the board through GraphQL: six triage columns replacing `Todo` / `In Progress` / `Done`, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
 
 Board writes need the `project` OAuth scope, which `gh auth login` does not request:
 
@@ -81,7 +81,8 @@ skills/
     SKILL.md           the wrapper: pre-flight, delegate, board rules
     PROJECT-BOARD.md   board config, gh recipes, Status mapping
 scripts/
-  link-skills.sh       symlink skills into a repo's .claude/skills/
+  create-triage-board.sh  build the Kanban board via GraphQL
+  link-skills.sh          symlink skills into a repo's .claude/skills/
 ```
 
 ## Credit

@@ -58,7 +58,7 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 
 ## Current overrides
 
-- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/engineering/triage/PROJECT-BOARD.md`.
+- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/engineering/triage/PROJECT-BOARD.md`. Board creation is deterministic and lives in `scripts/create-triage-board.sh`, not in the skill prose.
 
 ## Layout
 
