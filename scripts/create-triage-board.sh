@@ -122,12 +122,12 @@ cat <<EOF
 
 | Triage state role | Column          | Option ID           |
 | ----------------- | --------------- | ------------------- |
-| _(untriaged)_     | Inbox           | \`$(opt Inbox)\`
-| \`needs-triage\`    | Triage          | \`$(opt Triage)\`
-| \`needs-info\`      | Needs Info      | \`$(opt "Needs Info")\`
-| \`ready-for-agent\` | Ready for Agent | \`$(opt "Ready for Agent")\`
-| \`ready-for-human\` | Ready for Human | \`$(opt "Ready for Human")\`
-| \`wontfix\`         | Closed          | \`$(opt Closed)\`
+| _(untriaged)_     | Inbox           | \`$(opt Inbox)\` |
+| \`needs-triage\`    | Triage          | \`$(opt Triage)\` |
+| \`needs-info\`      | Needs Info      | \`$(opt "Needs Info")\` |
+| \`ready-for-agent\` | Ready for Agent | \`$(opt "Ready for Agent")\` |
+| \`ready-for-human\` | Ready for Human | \`$(opt "Ready for Human")\` |
+| \`wontfix\`         | Closed          | \`$(opt Closed)\` |
 
 ## Other fields maintained by triage
 
