@@ -141,6 +141,40 @@ Drift is a card whose Status doesn't match its labels, or a triaged item with no
 
 Report drift, don't silently fix it. List the items, say which side you'd trust for each and why, and let the maintainer approve the reconciliation in one pass. When they approve, labels win by default: set the board Status from the labels.
 
+## Backfill
+
+Issues triaged before the board existed carry labels but have no card. They are drift, and this is how you compute and clear them. Nothing here runs unprompted: present the list, get approval, then file in one pass.
+
+**1. Every issue carrying a triage state label.** `--label` repeated is an AND in `gh issue list`, so use `--search`, where a comma-separated `label:` is an OR:
+
+```bash
+gh issue list --state all --limit 1000 \
+  --search 'label:needs-triage,needs-info,ready-for-agent,ready-for-human,wontfix' \
+  --json number,title,state,labels \
+  --jq '.[] | {n: .number, title, state, labels: [.labels[].name]}'
+```
+
+**2. Everything already on the board:**
+
+```bash
+gh project item-list <number> --owner <owner> --limit 500 --format json \
+  --jq '[.items[].content.number // empty] | sort | .[]'
+```
+
+`// empty` drops draft cards, which have no issue behind them.
+
+**3. The difference is the backfill set.** Write both number lists to files and:
+
+```bash
+comm -23 <(sort triaged.txt) <(sort on-board.txt)
+```
+
+**4. Present it before filing.** Group by the state label each issue carries, so the maintainer sees which column each one is heading to, and say how many. A long backlog is worth filing in slices ("just the open ones", "skip wontfix") rather than all at once.
+
+**5. File the approved set**, one item at a time: add the card, then set its Status from its state label (§ Recipes, § Status mapping). If one item fails, report it and keep going; don't abandon the batch. Report the count filed and the ones that failed.
+
+Issues with **no** triage label at all are not backfill. They have never been triaged, so they belong in upstream's "Unlabeled" bucket and go onto the board the normal way, when triage reaches them.
+
 ## Failure modes
 
 - **Missing `project` scope**: board calls fail with an HTTP 403 or a "missing required scopes" message. Never let this block label work.

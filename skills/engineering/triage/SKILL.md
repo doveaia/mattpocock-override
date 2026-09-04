@@ -52,7 +52,7 @@ Upstream's instructions govern the triage. These rules sit on top of them and st
 
 **Board language means the same thing as label language.** "Move #42 to the Ready for Agent column" is upstream's "move #42 to ready-for-agent": it changes the labels too, not just the card.
 
-**Only what triage touches gets filed.** No bulk import of a backlog unless the maintainer asks for it in so many words.
+**Filing is automatic; backfilling is asked for.** Any item triage touches is filed without asking. Issues that were already triaged before the board existed are *not* swept in silently: they surface in the drift bucket, or on a direct request ("mets le backlog sur le board"), and get filed in one pass the maintainer approves ([PROJECT-BOARD.md](PROJECT-BOARD.md) § Backfill). Never start a backfill unprompted.
 
 ## Reference
 
