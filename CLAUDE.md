@@ -69,10 +69,9 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 plugin.json                       the same plugin, Agent Plugins format
 skills/<name>/                    one wrapper per upstream skill, flat
 scripts/create-triage-board.sh    build the triage board via GraphQL
-scripts/link-skills.sh            symlink skills into a repo's .claude/skills/
 ```
 
-`link-skills.sh` exists because both plugins expose the same skill names, so a bare `/triage` is ambiguous. A project-level `.claude/skills/` entry outranks a plugin skill and makes the bare name resolve here.
+Both plugins expose the same skill names, so a bare `/triage` is ambiguous. Skills here are invoked by their qualified name, `mattpocock-skills-override:<name>`. That is the only supported entry point: don't add a symlink installer to make the bare name resolve here, since a second install path means a second set of runtime assumptions to keep true.
 
 ## The second manifest (Agent Plugins)
 

@@ -47,22 +47,15 @@ gh auth refresh -s project --hostname github.com
 /plugin install mattpocock-skills-override@mattpocock-override
 ```
 
-### Making the override actually win
+### Invoking it
 
-Both plugins expose a skill called `triage`, so a bare `/triage` is ambiguous. Pick one:
+Always by its qualified name:
 
-**Call it by namespace.** `mattpocock-skills-override:triage` is always unambiguous, and needs no setup.
-
-**Or link it into the project.** Project-level skills in `.claude/skills/` take precedence over plugin skills of the same name, which makes bare `/triage` resolve here:
-
-```bash
-git clone git@github.com:doveaia/mattpocock-override.git
-./mattpocock-override/scripts/link-skills.sh /path/to/your/repo
+```
+mattpocock-skills-override:triage
 ```
 
-Symlinks, so a `git pull` here updates every repo you linked.
-
-Either way the upstream plugin stays installed: the wrapper calls into it.
+The upstream plugin stays installed, since the wrapper calls into it, so both plugins expose a skill named `triage` and a bare `/triage` is ambiguous by construction. The namespace is the answer, and it needs no per-repo setup.
 
 ## Adding an override
 
@@ -86,7 +79,6 @@ skills/
     PROJECT-BOARD.md      board config, gh recipes, Status mapping
 scripts/
   create-triage-board.sh  build the triage board via GraphQL
-  link-skills.sh          symlink skills into a repo's .claude/skills/
 ```
 
 ## Agent Plugins (agent-plugins.org) compatibility

@@ -67,13 +67,9 @@ Run this when `docs/agents/github-project.md` is missing. It is a conversation, 
    "$CLAUDE_PLUGIN_ROOT/scripts/create-triage-board.sh"
    ```
 
-   The script ships with this plugin, not with the repo being triaged, so it is never `./scripts/...`: the working directory at that moment is the user's project. `$CLAUDE_PLUGIN_ROOT` is set for a plugin skill. If it is empty, this skill was installed by symlink into a project's `.claude/skills/`, so resolve the script next to the skill instead:
+   The script ships with this plugin, not with the repo being triaged, so it is never `./scripts/...`: the working directory at that moment is the user's project. `$CLAUDE_PLUGIN_ROOT` points at the installed plugin and is always set here, because this skill is only ever invoked as a plugin skill, `mattpocock-skills-override:triage`.
 
-   ```bash
-   "$(dirname "$(readlink -f .claude/skills/triage)")/../scripts/create-triage-board.sh"
-   ```
-
-   Either way it runs **in the repo being triaged**: it reads the owner, repo name and repo ID from `gh repo view` in the working directory, so the project it creates is named after that repo and linked to it.
+   It runs **in the repo being triaged**: it reads the owner, repo name and repo ID from `gh repo view` in the working directory, so the project it creates is named after that repo and linked to it.
 
    `gh project create` alone leaves a Table view with `Todo` / `In Progress` / `Done`. The script takes it the rest of the way through GraphQL: it names the project after the git repo, defines the six triage columns on the built-in `Status` field, switches the default view to `BOARD_LAYOUT`, links the project to the repo, and prints the config file with every ID resolved. Pass `--owner` or `--title` to override its defaults.
 
