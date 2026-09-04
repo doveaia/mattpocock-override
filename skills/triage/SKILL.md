@@ -16,11 +16,19 @@ Follow these three phases in order. Phase 2 is the whole upstream skill; phases 
 
 ### Phase 1: pre-flight (before delegating)
 
-1. **Read the board config**, `docs/agents/github-project.md`.
+1. **Check the issue tracker is GitHub.** Read `docs/agents/issue-tracker.md`, written by `/setup-matt-pocock-skills`. Its first heading names the choice: `# Issue tracker: GitHub`.
+
+   This layer projects onto a **GitHub** Projects board, so it only applies when the repo's issues live in GitHub Issues. For GitLab, local markdown, or a freeform tracker (Jira, Linear), **the whole layer stands down**: say once that the board is skipped because this repo tracks issues elsewhere, then go straight to phase 2 and run plain upstream triage. Do not create a GitHub project, do not read or write `docs/agents/github-project.md`, and do not apply phase 3.
+
+   Standing down is not an error and needs no approval. A GitLab repo triaging correctly without a board is this skill working, not failing. Never offer to create a GitHub project "anyway" for a repo that tracks its issues elsewhere.
+
+   If `docs/agents/issue-tracker.md` does not exist, setup has never run. Stand down the same way and let upstream raise it: it already tells the maintainer to run `/setup-matt-pocock-skills`, and this layer must not duplicate that message or pre-empt the choice.
+
+2. **Read the board config**, `docs/agents/github-project.md`.
 
    If it is missing, this is the first run: do the setup in [PROJECT-BOARD.md](PROJECT-BOARD.md) (§ First run) now, before any triage work. It resolves the project, field, and option IDs by `gh` call and writes them down. Never guess an ID.
 
-2. **Check the `project` OAuth scope** (`gh auth status`). If it is absent, tell the maintainer to run `gh auth refresh -s project --hostname github.com`, and ask whether to continue label-only. A missing scope is never a reason to skip the triage itself.
+3. **Check the `project` OAuth scope** (`gh auth status`). If it is absent, tell the maintainer to run `gh auth refresh -s project --hostname github.com`, and ask whether to continue label-only. A missing scope is never a reason to skip the triage itself.
 
 ### Phase 2: delegate to upstream
 

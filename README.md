@@ -28,6 +28,7 @@ This wrapper leaves that state machine entirely alone and projects it onto a boa
 - **Labels stay the source of truth.** The board is derived. When a card is dragged by hand and the labels disagree, it reports the drift and asks, rather than picking a winner.
 - **State role to column** is a mapping you own, written to `docs/agents/github-project.md` on first run alongside the resolved project, field, and option IDs. No ID is ever guessed.
 - **Board failures never roll back label work.** A missing OAuth scope degrades the skill to plain upstream behaviour instead of breaking it.
+- **GitHub-only, by construction.** `/setup-matt-pocock-skills` lets a repo track issues in GitLab, local markdown, or elsewhere. When it does, the board layer stands down and you get plain upstream triage: no GitHub project is created for a repo whose issues do not live in GitHub.
 
 First run resolves everything: it reuses a project if you have one, or runs `scripts/create-triage-board.sh` to build the board, named after the repo. `gh project create` yields a Table view with `Todo` / `In Progress` / `Done`, so the script takes it the rest of the way through GraphQL: the six triage columns on the built-in `Status` field, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
 

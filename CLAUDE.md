@@ -39,6 +39,7 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 ## Layering rules well
 
 - **State the precedence.** Where the layer and upstream touch, say which wins.
+- **Check the layer even applies.** Upstream's skills are configurable per repo, and a layer built on one particular choice must confirm that choice before acting. `triage` reads `docs/agents/issue-tracker.md` and stands down entirely when the repo tracks issues anywhere but GitHub. Standing down is a normal outcome, not an error: the skill degrades to plain upstream behaviour and says so once.
 - **Never roll back upstream's work.** If the layer's own step fails, report which step failed, leave what upstream did in place, and offer a retry. The layer is additive; a failure in it must degrade the skill to plain upstream behaviour, not break it.
 - **Name a source of truth.** When the layer introduces a second representation of the same state, one side is authoritative and the other is derived. Report disagreement between them; never silently reconcile.
 - **Keep the delta legible.** A wrapper that runs long is usually re-explaining upstream. Cut it back to what is genuinely new.

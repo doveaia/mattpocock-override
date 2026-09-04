@@ -49,6 +49,8 @@ _(none by default; add rows as `Field name | Field ID | how triage sets it`)_
 
 Run this when `docs/agents/github-project.md` is missing. It is a conversation, not a script: confirm before creating anything.
 
+0. **The tracker is already known to be GitHub.** Phase 1 of the skill established that before sending you here. Nothing in this file runs for a repo whose issues live in GitLab, in local markdown, or in a freeform tracker.
+
 1. **Check the scope.** `gh auth status`. If `project` is absent, stop and ask for `gh auth refresh -s project --hostname github.com`.
 
 2. **Find the owner.** `gh repo view --json owner,name,nameWithOwner`. Projects hang off a user or org, not a repo, so a repo under an org usually wants the org's project. Propose the owner, let the maintainer correct it.
