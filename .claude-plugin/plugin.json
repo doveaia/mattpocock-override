@@ -1,6 +1,6 @@
 {
   "name": "mattpocock-skills-override",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Thin wrappers over Matt Pocock's engineering skills. Each keeps its upstream name and delegates to the upstream skill, layering changes on top instead of forking. Currently ships triage with GitHub Projects board integration.",
   "author": {
     "name": "James Kokou GAGLO",
