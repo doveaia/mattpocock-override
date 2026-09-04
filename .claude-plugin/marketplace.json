@@ -4,12 +4,12 @@
     "name": "James Kokou GAGLO",
     "url": "https://github.com/doveaia"
   },
-  "description": "Drop-in overrides for Matt Pocock's Claude Code skills. Same skill names, opinionated changes.",
+  "description": "Thin overrides for Matt Pocock's Claude Code skills. Wrappers, not forks: they delegate to the upstream plugin and layer on top.",
   "plugins": [
     {
       "name": "mattpocock-skills-override",
       "source": "./",
-      "description": "Overridden versions of mattpocock-skills. Currently: triage, extended to file every issue onto a GitHub Projects board.",
+      "description": "Wrappers over mattpocock-skills that layer on extra behaviour. Currently: triage, extended to file every issue onto a GitHub Projects board. Requires the mattpocock-skills plugin.",
       "category": "engineering",
       "keywords": [
         "engineering",

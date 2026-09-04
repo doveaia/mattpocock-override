@@ -1,23 +1,31 @@
 # mattpocock-override
 
-A Claude Code marketplace holding **drop-in overrides for [Matt Pocock's skills](https://github.com/mattpocock/skills)**.
+A Claude Code marketplace holding **thin overrides for [Matt Pocock's skills](https://github.com/mattpocock/skills)**.
 
-Upstream ships an excellent set of engineering skills as a read-only, managed plugin. That is the point of it, and also its limit: you cannot change a skill without forking the whole bundle. This repo takes the other route. It holds only the skills I actually wanted to change, each keeping its **upstream name** so it can stand in for the original, and leaves everything else to upstream.
+Upstream ships an excellent set of engineering skills as a read-only, managed plugin. That is the point of it, and also its limit: you cannot change a skill without forking the whole bundle, and a fork stops receiving updates the day you make it.
+
+This repo takes the other route. Each skill here is a **wrapper**, not a copy. It delegates the actual work to the upstream skill by its qualified name and layers its own rules on top. Nothing from upstream is vendored, so upstream's updates arrive normally and this repo stays a few hundred lines of delta.
+
+**Requires the upstream plugin.** These skills have nothing to run without it:
+
+```bash
+/plugin install mattpocock-skills
+```
 
 ## What's overridden
 
-| Skill    | Change                                                                                                                     |
-| -------- | -------------------------------------------------------------------------------------------------------------------------- |
-| `triage` | Every issue triage touches is filed onto a **GitHub Projects (v2) board**, and each state role is mirrored to a Status column. |
+| Skill    | Wraps                     | Adds                                                                                              |
+| -------- | ------------------------- | ------------------------------------------------------------------------------------------------- |
+| `triage` | `mattpocock-skills:triage` | Files every triaged issue or PR onto a **GitHub Projects (v2) board**, mirroring state role to Status column. |
 
 ### `triage`: issues on a board
 
 Upstream `/triage` moves issues through a state machine of labels: `needs-triage`, `needs-info`, `ready-for-agent`, `ready-for-human`, `wontfix`. That works, but the only way to see the queue is to run label queries.
 
-This version keeps the state machine exactly as it is and projects it onto a board:
+This wrapper leaves that state machine entirely alone and projects it onto a board:
 
 - **Nothing falls off.** Any issue or PR triage touches gets a card, and issues triage *creates* are born on the board (`gh issue create --project`).
-- **Labels stay the source of truth.** The board is derived. When a card is dragged by hand and the labels disagree, triage reports the drift and asks, rather than picking a winner.
+- **Labels stay the source of truth.** The board is derived. When a card is dragged by hand and the labels disagree, it reports the drift and asks, rather than picking a winner.
 - **State role to column** is a mapping you own, written to `docs/agents/github-project.md` on first run alongside the resolved project, field, and option IDs. No ID is ever guessed.
 - **Board failures never roll back label work.** A missing OAuth scope degrades the skill to plain upstream behaviour instead of breaking it.
 
@@ -38,29 +46,29 @@ gh auth refresh -s project --hostname github.com
 
 ### Making the override actually win
 
-An override only helps if it is the one that runs. Pick one:
+Both plugins expose a skill called `triage`, so a bare `/triage` is ambiguous. Pick one:
 
-**Don't install upstream's `triage`.** Cleanest. Install the upstream plugin for everything else and invoke this one for triage.
+**Call it by namespace.** `mattpocock-skills-override:triage` is always unambiguous, and needs no setup.
 
-**Or link it into the project.** Project-level skills in `.claude/skills/` take precedence over plugin skills of the same name:
+**Or link it into the project.** Project-level skills in `.claude/skills/` take precedence over plugin skills of the same name, which makes bare `/triage` resolve here:
 
 ```bash
-git clone https://github.com/doveaia/mattpocock-override
+git clone git@github.com:doveaia/mattpocock-override.git
 ./mattpocock-override/scripts/link-skills.sh /path/to/your/repo
 ```
 
 Symlinks, so a `git pull` here updates every repo you linked.
 
-If both are installed and neither is shadowed, disambiguate by namespace: `mattpocock-skills-override:triage`.
+Either way the upstream plugin stays installed: the wrapper calls into it.
 
 ## Adding an override
 
 1. `skills/<category>/<upstream-skill-name>/SKILL.md`. Keep the upstream `name:` in the frontmatter, or it isn't an override.
-2. Copy any reference file the SKILL.md links to into the same folder, so the skill folder stands alone.
-3. Add the path to `skills` in `.claude-plugin/plugin.json`.
-4. Say what changed, and why, in the table above.
+2. Structure it in three phases: pre-flight, delegate to `mattpocock-skills:<skill>` by qualified name, then the rules your layer adds. Always use the qualified name; a bare one can resolve back to your own skill and loop.
+3. Don't copy upstream files. If you need to point at one, link to it on GitHub.
+4. Add the path to `skills` in `.claude-plugin/plugin.json`, and a row to the table above.
 
-Keep the diff from upstream small and legible. The value here is the delta, not a rewrite.
+Keep the delta small and legible. The value here is the layer, not a rewrite.
 
 ## Layout
 
@@ -70,17 +78,15 @@ Keep the diff from upstream small and legible. The value here is the delta, not 
   plugin.json          plugin "mattpocock-skills-override"
 skills/
   engineering/triage/
-    SKILL.md           the override
+    SKILL.md           the wrapper: pre-flight, delegate, board rules
     PROJECT-BOARD.md   board config, gh recipes, Status mapping
-    AGENT-BRIEF.md     verbatim from upstream
-    OUT-OF-SCOPE.md    verbatim from upstream
 scripts/
   link-skills.sh       symlink skills into a repo's .claude/skills/
 ```
 
 ## Credit
 
-The skills, and the state machine this builds on, are Matt Pocock's: [mattpocock/skills](https://github.com/mattpocock/skills). `AGENT-BRIEF.md` and `OUT-OF-SCOPE.md` are carried over unchanged. MIT on both sides.
+The skills, and the state machine this builds on, are Matt Pocock's: [mattpocock/skills](https://github.com/mattpocock/skills). MIT on both sides.
 
 ## License
 
