@@ -1,0 +1,23 @@
+{
+  "name": "mattpocock-override",
+  "owner": {
+    "name": "James Kokou GAGLO",
+    "url": "https://github.com/doveaia"
+  },
+  "description": "Drop-in overrides for Matt Pocock's Claude Code skills. Same skill names, opinionated changes.",
+  "plugins": [
+    {
+      "name": "mattpocock-skills-override",
+      "source": "./",
+      "description": "Overridden versions of mattpocock-skills. Currently: triage, extended to file every issue onto a GitHub Projects board.",
+      "category": "engineering",
+      "keywords": [
+        "engineering",
+        "skills",
+        "triage",
+        "github-projects",
+        "override"
+      ]
+    }
+  ]
+}

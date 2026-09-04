@@ -1,0 +1,21 @@
+{
+  "name": "mattpocock-skills-override",
+  "version": "0.1.0",
+  "description": "Overridden versions of Matt Pocock's engineering skills. Each skill keeps its upstream name so it can stand in for the original. Currently ships triage with GitHub Projects board integration.",
+  "author": {
+    "name": "James Kokou GAGLO",
+    "url": "https://github.com/doveaia"
+  },
+  "repository": "https://github.com/doveaia/mattpocock-override",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "skills",
+    "triage",
+    "github-projects",
+    "override"
+  ],
+  "skills": [
+    "./skills/engineering/triage"
+  ]
+}
