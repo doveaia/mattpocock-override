@@ -65,7 +65,11 @@ Run this when `docs/agents/github-project.md` is missing. It is a conversation, 
    ./scripts/create-triage-board.sh
    ```
 
-   `gh project create` alone would leave a Table view with `Todo` / `In Progress` / `Done`, since it takes no template and no layout. The script builds the Kanban shape through GraphQL instead: it names the project after the git repo, replaces the stock Status options with the six triage columns, switches the default view to `BOARD_LAYOUT`, links the project to the repo, and prints the config file with every ID resolved. Pass `--owner` or `--title` to override its defaults.
+   `gh project create` alone leaves a Table view with `Todo` / `In Progress` / `Done`. The script takes it the rest of the way through GraphQL: it names the project after the git repo, defines the six triage columns on the built-in `Status` field, switches the default view to `BOARD_LAYOUT`, links the project to the repo, and prints the config file with every ID resolved. Pass `--owner` or `--title` to override its defaults.
+
+   GitHub's **Kanban template plays no part in this**, deliberately. It is reachable only from the web UI's creation form, and its columns are `Todo` / `In Progress` / `Done`: not one of them is a triage state, so starting there would mean replacing all three. Defining the columns directly is the shorter path and the honest one.
+
+   The columns go on the built-in `Status` field rather than a new single-select of our own. A board groups by `Status` by default and GitHub's built-in workflows key off it; a field merely *named* `Status` would inherit none of that.
 
    It refuses to run without the `project` scope, and it replaces the Status options wholesale, so only ever point it at a project it just created.
 

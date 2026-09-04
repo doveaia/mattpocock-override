@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
-# Create a Kanban-shaped GitHub Projects (v2) board for /triage.
+# Create the /triage board: a GitHub Projects (v2) board with one column per
+# triage state.
 #
-# gh project create has no --template and always makes a Table view, so this
-# builds the Kanban shape through GraphQL instead:
+# GitHub's Kanban template is not involved. It only exists in the web UI's
+# creation form, and it would be the wrong starting point anyway: its columns
+# are Todo / In Progress / Done, none of which is a triage state, so every one
+# of them would have to be replaced. We define the columns directly instead.
 #
 #   1. create the project, named after the git repo
-#   2. replace the stock Status options with the triage columns
+#   2. define the triage columns on the Status field
 #   3. switch the default view to BOARD_LAYOUT (a board groups by Status)
 #   4. link the project to the repo
 #   5. print docs/agents/github-project.md, ready to save
@@ -46,9 +49,15 @@ NUMBER="$(printf '%s' "$PROJECT_JSON" | jq -r .number)"
 URL="$(printf '%s' "$PROJECT_JSON" | jq -r .url)"
 echo "1. created project #$NUMBER  $URL"
 
-# --- 2. triage columns replace Todo / In Progress / Done ---------------------
-# Options are replaced wholesale: any option not listed here is dropped. Safe on
-# a project this script just created, destructive on one that already has cards.
+# --- 2. define the triage columns -------------------------------------------
+# Update the built-in Status field rather than making our own single-select.
+# Status is the field a board groups by out of the box, and GitHub's built-in
+# workflows key off it (an item closing moves to the option they treat as done),
+# and a field merely *named* Status would inherit none of that.
+#
+# Options are replaced wholesale: any option not listed here is dropped, which
+# is why this only ever runs against a project the script just created. The
+# stock Todo / In Progress / Done go away here.
 STATUS_FIELD_ID="$(gh project field-list "$NUMBER" --owner "$OWNER" --format json \
   --jq '.fields[] | select(.name == "Status") | .id')"
 
