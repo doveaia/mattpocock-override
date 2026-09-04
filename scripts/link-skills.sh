@@ -17,7 +17,7 @@ fi
 
 mkdir -p "$TARGET/.claude/skills"
 
-for skill in "$SRC"/skills/*/*/; do
+for skill in "$SRC"/skills/*/; do
   name="$(basename "$skill")"
   dest="$TARGET/.claude/skills/$name"
   if [ -e "$dest" ] && [ ! -L "$dest" ]; then

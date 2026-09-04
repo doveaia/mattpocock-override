@@ -1,0 +1,21 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "mattpocock-skills-override",
+  "version": "0.1.0",
+  "description": "Thin wrappers over Matt Pocock's engineering skills. Each keeps its upstream name and delegates to the upstream skill, layering behaviour on top instead of forking. Ships one skill, triage, extended to file every issue onto a GitHub Projects (v2) board. Hard dependency: the upstream mattpocock-skills plugin must also be installed, since every skill here delegates to it and has nothing to run without it.",
+  "author": {
+    "name": "James Kokou GAGLO",
+    "url": "https://github.com/doveaia"
+  },
+  "homepage": "https://github.com/doveaia/mattpocock-override",
+  "repository": "https://github.com/doveaia/mattpocock-override",
+  "license": "MIT",
+  "keywords": [
+    "engineering",
+    "skills",
+    "triage",
+    "github-projects",
+    "override",
+    "requires-mattpocock-skills"
+  ]
+}

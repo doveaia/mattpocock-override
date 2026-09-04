@@ -29,7 +29,9 @@ This wrapper leaves that state machine entirely alone and projects it onto a boa
 - **State role to column** is a mapping you own, written to `docs/agents/github-project.md` on first run alongside the resolved project, field, and option IDs. No ID is ever guessed.
 - **Board failures never roll back label work.** A missing OAuth scope degrades the skill to plain upstream behaviour instead of breaking it.
 
-First run resolves everything: it reuses a project if you have one, or runs `scripts/create-triage-board.sh` to build a Kanban board named after the repo. `gh project create` has no `--template` and always yields a Table view, so the script assembles the board through GraphQL: six triage columns replacing `Todo` / `In Progress` / `Done`, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
+First run resolves everything: it reuses a project if you have one, or runs `scripts/create-triage-board.sh` to build the board, named after the repo. `gh project create` yields a Table view with `Todo` / `In Progress` / `Done`, so the script takes it the rest of the way through GraphQL: the six triage columns on the built-in `Status` field, a `BOARD_LAYOUT` default view, and the project linked to the repo. It then prints `docs/agents/github-project.md` with every ID resolved.
+
+GitHub's Kanban template is not involved: it exists only in the web UI's creation form, and none of its three columns is a triage state, so the columns are defined directly.
 
 Board writes need the `project` OAuth scope, which `gh auth login` does not request:
 
@@ -63,7 +65,7 @@ Either way the upstream plugin stays installed: the wrapper calls into it.
 
 ## Adding an override
 
-1. `skills/<category>/<upstream-skill-name>/SKILL.md`. Keep the upstream `name:` in the frontmatter, or it isn't an override.
+1. `skills/<upstream-skill-name>/SKILL.md`, flat: no category directory, because Agent Plugins clients do not recurse into one. Keep the upstream `name:` in the frontmatter, or it isn't an override.
 2. Structure it in three phases: pre-flight, delegate to `mattpocock-skills:<skill>` by qualified name, then the rules your layer adds. Always use the qualified name; a bare one can resolve back to your own skill and loop.
 3. Don't copy upstream files. If you need to point at one, link to it on GitHub.
 4. Add the path to `skills` in `.claude-plugin/plugin.json`, and a row to the table above.
@@ -74,16 +76,39 @@ Keep the delta small and legible. The value here is the layer, not a rewrite.
 
 ```
 .claude-plugin/
-  marketplace.json     marketplace "mattpocock-override"
-  plugin.json          plugin "mattpocock-skills-override"
+  marketplace.json        marketplace "mattpocock-override"
+  plugin.json             plugin "mattpocock-skills-override"
+plugin.json               the same plugin, Agent Plugins format
 skills/
-  engineering/triage/
-    SKILL.md           the wrapper: pre-flight, delegate, board rules
-    PROJECT-BOARD.md   board config, gh recipes, Status mapping
+  triage/
+    SKILL.md              the wrapper: pre-flight, delegate, board rules
+    PROJECT-BOARD.md      board config, gh recipes, Status mapping
 scripts/
-  create-triage-board.sh  build the Kanban board via GraphQL
+  create-triage-board.sh  build the triage board via GraphQL
   link-skills.sh          symlink skills into a repo's .claude/skills/
 ```
+
+## Agent Plugins (agent-plugins.org) compatibility
+
+The repo carries a **second, portable manifest** so the plugin also loads in clients
+that implement [Agent Plugins v1.0.0](https://agent-plugins.org/specification):
+
+- **`plugin.json` at the repo root** — the portable manifest. `.claude-plugin/plugin.json`
+  stays the authoritative one for Claude Code; the root file is additive and neither
+  client reads the other's.
+- **A flat `skills/` layout.** Agent Plugins discovers skills only in *immediate* children of
+  `skills/` and never recurses, so a skill under a category directory is invisible to a
+  conformant client. Hence `skills/triage/`, not `skills/engineering/triage/`. Upstream's
+  category layout works there because Claude Code lists skill paths explicitly; here the
+  portable format sets the shape.
+- **No `mcp.json`.** That file is only for MCP servers, and this plugin ships none.
+
+The two manifests duplicate name, version, description, author, repository, and license.
+**Change one, change the other.**
+
+Agent Plugins v1 has no field for depending on another plugin, so the hard dependency on
+`mattpocock-skills` is stated in the root manifest's `description` and keywords only.
+Nothing enforces it.
 
 ## Credit
 

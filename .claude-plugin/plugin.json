@@ -16,6 +16,6 @@
     "override"
   ],
   "skills": [
-    "./skills/engineering/triage"
+    "./skills/triage"
   ]
 }

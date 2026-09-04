@@ -20,7 +20,7 @@ To *consult* upstream, clone it to the scratchpad and read it there. Do not clon
 
 ## Anatomy of a wrapper skill
 
-`skills/<category>/<upstream-name>/SKILL.md`, in three phases:
+`skills/<upstream-name>/SKILL.md`, in three phases:
 
 1. **Pre-flight.** What this layer needs before any upstream work runs: config files, credentials, scope checks. Fail loudly and early here, never mid-flow.
 2. **Delegate.** Call the Skill tool on the upstream skill by its **fully qualified name**, `mattpocock-skills:<name>`.
@@ -45,7 +45,7 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 
 ## Adding an override
 
-1. Create `skills/<category>/<upstream-name>/SKILL.md` with the upstream `name:` in the frontmatter. A different name is not an override.
+1. Create `skills/<upstream-name>/SKILL.md` with the upstream `name:` in the frontmatter. A different name is not an override. **Flat, never under a category directory**: Agent Plugins discovers only immediate children of `skills/` and is forbidden from recursing, so a nested skill is invisible to conformant clients.
 2. Reference files that are genuinely this repo's work live alongside it (e.g. `PROJECT-BOARD.md`). Upstream's do not.
 3. Register the folder path in `skills` in `.claude-plugin/plugin.json`.
 4. Add a row to the table in `README.md`: skill, what it wraps, what it adds.
@@ -58,15 +58,43 @@ The wrapper has nothing to run without the upstream plugin. Detect it, stop, and
 
 ## Current overrides
 
-- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/engineering/triage/PROJECT-BOARD.md`. Board creation is deterministic and lives in `scripts/create-triage-board.sh`, not in the skill prose.
+- **`triage`** wraps `mattpocock-skills:triage`. Adds a GitHub Projects (v2) board as a projection of upstream's label state machine. Labels are the source of truth, the board is derived. Config and `gh` recipes: `skills/triage/PROJECT-BOARD.md`. Board creation is deterministic and lives in `scripts/create-triage-board.sh`, not in the skill prose.
 
 ## Layout
 
 ```
 .claude-plugin/marketplace.json   marketplace "mattpocock-override"
 .claude-plugin/plugin.json        plugin "mattpocock-skills-override"
-skills/<category>/<name>/         one wrapper per upstream skill
+plugin.json                       the same plugin, Agent Plugins format
+skills/<name>/                    one wrapper per upstream skill, flat
+scripts/create-triage-board.sh    build the triage board via GraphQL
 scripts/link-skills.sh            symlink skills into a repo's .claude/skills/
 ```
 
 `link-skills.sh` exists because both plugins expose the same skill names, so a bare `/triage` is ambiguous. A project-level `.claude/skills/` entry outranks a plugin skill and makes the bare name resolve here.
+
+## The second manifest (Agent Plugins)
+
+The repo targets two formats. `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`
+are authoritative for Claude Code. The root `plugin.json` targets
+[Agent Plugins v1.0.0](https://agent-plugins.org/specification) and is purely additive —
+neither client reads the other's file, and the root one must never replace them.
+
+Rules when editing either:
+
+- **Keep them in sync.** Both carry name, version, description, author, repository, license,
+  keywords. There is no generator; a change to one is a change to both.
+- **The root manifest schema is closed.** Only `$schema`, `name`, `version`, `description`,
+  `author`, `homepage`, `repository`, `license`, `keywords`, `extensions` are legal top-level
+  fields. Do not add Claude Code fields (`skills`, `commands`, `hooks`) to it — they belong in
+  `.claude-plugin/plugin.json`, and anything client-specific belongs under `extensions` keyed
+  by a reverse-domain namespace.
+- **Skills live flat under `skills/`.** Agent Plugins discovers `skills/<name>/SKILL.md` and is
+  forbidden from recursing, so a category directory would hide every skill under it from
+  conformant clients. This is why the layout has no `<category>/` level, unlike upstream's.
+  The frontmatter `name` must equal the directory name.
+- **No `mcp.json` unless the plugin actually ships MCP servers.** It is not a copy of `.mcp.json`
+  and has its own schema (`https://agent-plugins.org/schemas/1.0.0/mcp.schema.json`).
+- **Agent Plugins v1 has no dependency field.** The dependency on `mattpocock-skills` lives in the
+  root manifest's `description` and keywords, and is enforced by nothing but each wrapper's
+  pre-flight check.
